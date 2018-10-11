@@ -1,5 +1,6 @@
 package com.nondirective;
 
+import java.util.regex.*;
 import java.util.Scanner;
 import java.sql.*;
 
@@ -35,7 +36,7 @@ public class Main {
 		int num = 0;
 		while(true) {
 			num = input.nextInt();
-			input.next();
+//			input.next();
 			if(num>0&&num<=3)break;
 			System.out.println("please input 1-3.");
 		}
@@ -48,15 +49,81 @@ public class Main {
 			int num_query = 0;
 			while(true) {
 				num_query = input.nextInt();
-				input.next();
+//				input.next();
 				if(num_query>0&&num_query<=4)break;
 				System.out.println("please input 1-4.");
 			}
-			PreparedStatement ps = statementManager.getQueryPreparedStatement(num_query, cnnt);
+			PreparedStatement ps_query = statementManager.getQueryPreparedStatement(num_query, cnnt);
+			if(!(num_query==1)) {
+				System.out.print("please input query instruct:");
+				String str = input.nextLine();
+				Pattern p = Pattern.compile("[0-9]*");
+				try {
+					if(p.matcher(str).matches()) //true=>number
+						ps_query.setInt(1, Integer.parseInt(str));
+					else
+						ps_query.setString(1, str);
+					ResultSet rs = ps_query.executeQuery();
+					
+					 while(rs.next())
+					 {
+						 System.out.println("id:"+rs.getInt(1)+" english:"+rs.getString(1)+" chinese:"+rs.getString(2));
+					 }
+				} catch (NumberFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else {
+				try {
+					ResultSet rs =ps_query.executeQuery();
+					while(rs.next())
+					{
+						System.out.println("id:"+rs.getInt(1)+" english:"+rs.getString(1)+" chinese:"+rs.getString(2));
+					}
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
 			
 		case 2:
-			
+			System.out.println("please input insert instruct.");
+			System.out.print("id:");
+			int id = input.nextInt();
+			input.next();
+			System.out.print("english:");
+			String english = input.nextLine();
+//			input.next();
+			System.out.print("chinese:");
+			String chinese = input.nextLine();
+			PreparedStatement ps_insert;
+			ps_insert = statementManager.getInsertPreparedStatement(cnnt);
+			try {
+				ps_insert.setInt(1, id);
+				ps_insert.setString(2, english);
+				ps_insert.setString(3, chinese);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			int status = -1;
+			try {
+				status =ps_insert.executeUpdate();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				System.out.println(status);
+			}
+			break;
 		case 3:System.exit(0);
+		default:
+			System.exit(0);
 		}
 		}
 		

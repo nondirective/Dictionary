@@ -3,12 +3,14 @@ package com.nondirective;
 import java.sql.*;
 
 public class statementManager {
+	//query prepared statement object
 	private static PreparedStatement ps1 = null;
 	private static PreparedStatement ps2 = null;
 	private static PreparedStatement ps3 = null;
 	private static PreparedStatement ps4 = null;
+	//insert prepared statement object
 	private static PreparedStatement ps5 = null;
-	//查询对象
+
 	private static final String queryEnglishChineseById = "select id,english,chinese from word where id=?";
 	//1
 	private static final String queryEnglishByChinese = "select id,english,chinese from word where chinese=?";
